@@ -6,13 +6,13 @@ require "optparse"
 options = ARGV.getopts("y:", "m:")
 
 OptionParser.new do |opt|
-	opt.on('-y VAL') do |v|
-		params[:y] = v.to_i
-	end
+  opt.on('-y VAL') do |v|
+    params[:y] = v.to_i
+  end
 
-	opt.on('-m VAL') do |v|
-		params[:m] = n.to_i
-	end
+  opt.on('-m VAL') do |v|
+    params[:m] = n.to_i
+  end
 end.parse!
 
 #puts options #=>{"y"=>"2022", "m"=>11}
@@ -23,15 +23,15 @@ today = Date.today
 date = Date.new
 
 if options["m"]
-	month = options["m"].to_i
+  month = options["m"].to_i
 else
-	month = today.mon #今月
+  month = today.mon #今月
 end
 
 if options["y"]
-	year = options["y"].to_i
+  year = options["y"].to_i
 else
-	year = today.year #今年
+  year = today.year #今年
 end
 
 #上記でカレンダーの題名
@@ -53,13 +53,13 @@ date.mday #日付
 last_date = Date.new(year,month,-1).mday #末日は最後から−1日のmdayの日
 
 for i in (1..last_date) do #1..last_dateを繰り返しします
-	print "#{i}".center(2)#centerでオブジェクト（1..last_date）をいい感じに配置
-	first_wday = first_wday + 1 #fday（first_wday）に1を足すのを繰り返す
-	if first_wday % 7 == 0#÷7であまりがゼロだったら折り返すようにする
-		puts#putsの後に何も書かないことで何も表示しない＆putsは改行ありで表示なので必然的に改行される
+  print "#{i}".center(2)#centerでオブジェクト（1..last_date）をいい感じに配置
+  first_wday = first_wday + 1 #fday（first_wday）に1を足すのを繰り返す
+  if first_wday % 7 == 0#÷7であまりがゼロだったら折り返すようにする
+    puts#putsの後に何も書かないことで何も表示しない＆putsは改行ありで表示なので必然的に改行される
 	else
-		print " "#上記（fday%7 == 0）以外では間に空白を置くよう指示
-	end
+    print " "#上記（fday%7 == 0）以外では間に空白を置くよう指示
+  end
 end
 
 print("\n")#printによる末尾の%が表示されないように改行\nを追加
