@@ -57,7 +57,7 @@ flame_hash_in_arry = []
 
 score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
   if i == 10 && a == 10
-    score_integer_array[-3..-1].each_slice(3) do |x, y, z|
+    score_integer_array[-3..].each_slice(3) do |x, y, z|
       flame = { i => [x, y, z] }
       @flame_hash_in_arry << flame
     end
