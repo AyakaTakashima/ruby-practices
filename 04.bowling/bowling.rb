@@ -1,76 +1,27 @@
 #! /usr/bin/env ruby
 
 score_result = Array.new(ARGV)
-score_x_array = score_result[0].split(",")#p score_array #=>["6", "3", "9", "0", "0", "3", "8", "2", "7", "3", "X", "9", "1", "8", "0", "X", "6", "4", "5"]
-score_array = score_x_array.map{|x| x=="X" ? "10" : x}#Xを10に変換
+score_x_array = score_result[0].split(",")
+score_array = score_x_array.map{|x| x=="X" ? "10" : x}
 score_integer_array = score_array.map(&:to_i)
 @score_integer_array = score_integer_array
 
-@score_integer_array#=>[6, 3, 9, 0, 0, 3, 8, 2, 7, 3, 10, 9, 1, 8, 0, 10, 6, 4, 5]
 @flame_arry = []
 
-#score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
-#	if (i == 10) && (a == 10)
-#		score_integer_array[-3 .. -1].each_slice(3) do|a, b, c|
-#			score = [a, b, c]
-#			@flame_arry << score
-#			break
-#		end
-#	elsif i == 10
-#		if @score_integer_array[-1] == @score_integer_array[-2]
-#			score_integer_array[-2 .. -1].each_slice(2) do |a, b|
-#				score = [a, b]
-#				@flame_arry << score
-#			end
-#		else
-#			score_integer_array[-3 .. -1].each_slice(3) do |a, b, c|
-#				score = [a, b, c]
-#				@flame_arry << score
-#			end
-#		end
-#		break
-#	elsif (i < 10) && (a == 10) && (b == 10)#ストライクが2フレーム連続続いた場合
-#		score = [a, 0]
-#		#score_integer_array.insert(i, 0)
-#		@flame_arry << score
-#		#p score_integer_array
-#		if b == 10
-#			score = [b, 0]
-#			#score_integer_array.insert(i, 0)
-#			@flame_arry << score
-#		end
-#		next
-#	elsif	(i < 10) && (a == 10)#1フレームだけストライクの場合
-#		b = 0
-#		score = [a, b]
-#		score_integer_array.insert(i, 0)
-#		@flame_arry << score
-#		#p score_integer_array
-#		next
-#	else
-#		score = [a, b]
-#		@flame_arry << score
-#	end
-#end
-
 score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
-	if (a == 10) && (b == 10)#ストライクが2フレーム連続続いた場合
+	if (a == 10) && (b == 10)
 		score = [a, 0]
-		#score_integer_array.insert(i, 0)
 		@flame_arry << score
-		#p score_integer_array
 		if b == 10
 			score = [b, 0]
-			#score_integer_array.insert(i, 0)
 			@flame_arry << score
 		end
 		next
-	elsif	a == 10#1フレームだけストライクの場合
+	elsif	a == 10
 		b = 0
 		score = [a, b]
 		score_integer_array.insert(i, 0)
 		@flame_arry << score
-		#p score_integer_array
 		next
 	else
 		score = [a, b]
@@ -94,12 +45,12 @@ if @flame_arry[12] != nil
 	@flame_arry[9] << flame[0]
 end
 
-@flame_arry#=>[[6, 3], [9, 0], [0, 3], [8, 2], [7, 3], [10, 0], [9, 1], [8, 0], [10, 0], [6, 4, 5], [5, nil]]
+@flame_arry
 
 score_result = Array.new(ARGV)
 score_x_array = score_result[0].split(",")
-score_array = score_x_array.map{|x| x=="X" ? "10" : x}#Xを10に変換
-score_integer_array = score_array.map(&:to_i) #配列の中身をintegerに変換
+score_array = score_x_array.map{|x| x=="X" ? "10" : x}
+score_integer_array = score_array.map(&:to_i)
 @score_integer_array = score_integer_array
 
 flame_hash_in_arry = []
@@ -114,8 +65,6 @@ score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
 		end
 	elsif i == 10
 		flame = {i => @flame_arry[9]}
-		#score_integer_array[-3 .. -1].each_slice(3) do|a, b, c|
-		#	flame = {i => [a, b, c]}
 		@flame_hash_in_arry << flame
 		break
 	elsif i == 11
@@ -130,9 +79,6 @@ score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
 		@flame_hash_in_arry << flame
 	end
 end
-
-@flame_hash_in_arry#=>[{1=>[6, 3]}, {2=>[9, 0]}, {3=>[0, 3]}, {4=>[8, 2]}, {5=>[7, 3]}, {6=>"strike"}, {7=>[9, 1]}, {8=>[8, 0]}, {9=>"strike"}, {10=>[6, 4, 5]}]
-#この時点ではまだkey指定できない
 
 point = []
 
