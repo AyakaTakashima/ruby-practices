@@ -14,6 +14,7 @@ def ls_command
     all_file << item
     all_file.sort!
   end
+
   padding_all_file = all_file.map { |file| file.ljust(17) }
   line = all_file.size / 4
   file_arry = []
@@ -56,13 +57,135 @@ def a_option
   end
   padding_all_file = all_file.map { |file| file.ljust(17) }
 
-  line = all_file.size / 4
+  line = all_file.size / 5
   file_arry = []
   padding_all_file.each_slice(line) do |a, b, c, d|
     file_arry << [a, b, c, d]
   end
   file_column = file_arry.transpose
   file_column.each do |x|
+    puts x.join(' ')
+  end
+end
+
+def l_option_main
+  @all_file = []
+  Dir.glob('*') do |item|
+    @all_file << item
+    @all_file.sort!
+  end
+
+  block_arry = []
+  @all_file.each do |file|
+    fs = File::Stat.new(file)
+    block_arry << fs.blocks
+  end
+  block = block_arry.sum
+  puts "total #{block}"
+
+  data_get
+
+  detail_arry = @detail.transpose
+
+  detail_arry.each do |x|
+    puts x.join(' ')
+  end
+end
+
+def alr_option_main
+  @all_file = []
+
+  Dir.foreach('.') do |item|
+    @all_file << item
+    @all_file.sort!
+  end
+  @all_file.reverse!
+
+  block_arry = []
+  @all_file.each do |file|
+    fs = File::Stat.new(file)
+    block_arry << fs.blocks
+  end
+  block = block_arry.sum
+  puts "total #{block}"
+
+  data_get
+
+  detail_arry = @detail.transpose
+
+  detail_arry.each do |x|
+    puts x.join(' ')
+  end
+end
+
+def al_option_main
+  @all_file = []
+
+  Dir.foreach('.') do |item|
+    @all_file << item
+    @all_file.sort!
+  end
+
+  block_arry = []
+  @all_file.each do |file|
+    fs = File::Stat.new(file)
+    block_arry << fs.blocks
+  end
+  block = block_arry.sum
+  puts "total #{block}"
+
+  data_get
+
+  detail_arry = @detail.transpose
+
+  detail_arry.each do |x|
+    puts x.join(' ')
+  end
+end
+
+def ar_option_main
+  all_file = []
+
+  Dir.foreach('.') do |item|
+    all_file << item
+    all_file.sort!
+  end
+
+  padding_all_file = all_file.map { |file| file.ljust(17) }
+  reverse_arry = padding_all_file.reverse
+
+  line = all_file.size / 4
+  file_arry = []
+  reverse_arry.each_slice(line) do |a, b, c, d|
+    file_arry << [a, b, c, d]
+  end
+  file_column = file_arry.transpose
+  file_column.each do |x|
+    puts x.join(' ')
+  end
+end
+
+def lr_option_main
+  @all_file = []
+  Dir.glob('*') do |item|
+    @all_file << item
+    @all_file.sort!
+  end
+  @all_file.reverse!
+
+  block_arry = []
+  @all_file.each do |file|
+    fs = File::Stat.new(file)
+    block_arry << fs.blocks
+  end
+  block = block_arry.sum
+  puts "total #{block}"
+
+  data_get
+
+  detail_arry = @detail.transpose
+
+  detail_arry.each do |x|
     puts x.join(' ')
   end
 end
@@ -251,37 +374,20 @@ def data_get
   file_name_data
 end
 
-def l_option
-  @all_file = []
-  Dir.glob('*') do |item|
-    @all_file << item
-    @all_file.sort!
-  end
-
-  block_arry = []
-  @all_file.each do |file|
-    fs = File::Stat.new(file)
-    block_arry << fs.blocks
-  end
-  block = block_arry.sum
-  puts "total #{block}"
-
-  data_get
-
-  detail_arry = @detail.transpose
-
-  detail_arry.each do |x|
-    puts x.join(' ')
-  end
-end
-
-case params
-when { 'a' => false, 'l' => false, 'r' => true }
-  r_option
-when { 'a' => true, 'l' => false, 'r' => false }
+if params['a'] && params['l'] && params['r']
+  alr_option_main
+elsif params['a'] && params['l']
+  al_option_main
+elsif params['a'] && params['r']
+  ar_option_main
+elsif params['l'] && params['r']
+  lr_option_main
+elsif params['l']
+  l_option_main
+elsif params['a']
   a_option
-when { 'a' => false, 'l' => true, 'r' => false }
-  l_option
+elsif params['r']
+  r_option
 else
   ls_command
 end
