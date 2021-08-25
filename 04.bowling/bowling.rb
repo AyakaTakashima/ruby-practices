@@ -44,28 +44,6 @@ score_integer_array = score_array.map(&:to_i)
 frame_hash_in_arry = []
 @frame_hash_in_arry = frame_hash_in_arry
 
-score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
-  if i == 10 && a == 10
-    score_integer_array[-3..].each_slice(3) do |x, y, z|
-      frame = { i => [x, y, z] }
-      @frame_hash_in_arry << frame
-    end
-  elsif i == 10
-    frame = { i => @frame_arry[9] }
-    @frame_hash_in_arry << frame
-    break
-  elsif i == 11
-    break
-  elsif	a == 10
-    frame = { i => 'strike' }
-    @frame_hash_in_arry << frame
-    @score_integer_array.insert(i, 0)
-  else
-    frame = { i => [a, b] }
-    @frame_hash_in_arry << frame
-  end
-end
-
 point = []
 
 def strike(this_frame)
@@ -89,22 +67,24 @@ def spare(this_frame)
   point + special_point
 end
 
-@frame_hash_in_arry.select do |hash|
-  @frame_hash = hash.to_h
-  @frame_hash.each do |key, value|
-    if value == 'strike'
-      this_frame = key - 1
-      point << strike(this_frame)
-      break
-    elsif (key < 11) && (value.sum == 10)
-      this_frame = key - 1
-      point << spare(this_frame)
-      break
-    elsif key < 10
-      point << value.sum
-    else
-      point << value.sum
+score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
+  if i == 10 && a == 10
+    score_integer_array[-3..].each_slice(3) do |x, y, z|
+      point << [x, y, z].sum
     end
+  elsif i == 10
+    point << @frame_arry[9].sum
+  elsif i > 10
+    break
+  elsif	a == 10
+    @score_integer_array.insert(i, 0)
+    this_frame = i - 1
+    point << strike(this_frame)
+  elsif (i < 10) && (a < 10) && (a + b == 10)
+    this_frame = i - 1
+    point << spare(this_frame)
+  else
+    point << [a, b].sum
   end
 end
 
