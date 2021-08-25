@@ -8,31 +8,31 @@ score_array = score_x_array.map { |x| x == 'X' ? '10' : x }
 score_integer_array = score_array.map(&:to_i)
 @score_integer_array = score_integer_array
 
-@flame_arry = []
+@frame_arry = []
 
 score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
   if (a == 10) && (b == 10)
     score = [a, 0]
-    @flame_arry << score
+    @frame_arry << score
     if b == 10
       score = [b, 0]
-      @flame_arry << score
+      @frame_arry << score
     end
   elsif	a == 10
     b = 0
     score = [a, b]
     score_integer_array.insert(i, 0)
-    @flame_arry << score
+    @frame_arry << score
   else
     score = [a, b]
-    @flame_arry << score
+    @frame_arry << score
   end
 end
 
-@flame_arry[10..12].each do |arry|
+@frame_arry[10..12].each do |arry|
   arry.nil?
-  flame = arry.compact
-  @flame_arry[9] << flame[0]
+  frame = arry.compact
+  @frame_arry[9] << frame[0]
 end
 
 score_result = Array.new(ARGV)
@@ -41,64 +41,64 @@ score_array = score_x_array.map { |x| x == 'X' ? '10' : x }
 score_integer_array = score_array.map(&:to_i)
 @score_integer_array = score_integer_array
 
-flame_hash_in_arry = []
-@flame_hash_in_arry = flame_hash_in_arry
+frame_hash_in_arry = []
+@frame_hash_in_arry = frame_hash_in_arry
 
 score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
   if i == 10 && a == 10
     score_integer_array[-3..].each_slice(3) do |x, y, z|
-      flame = { i => [x, y, z] }
-      @flame_hash_in_arry << flame
+      frame = { i => [x, y, z] }
+      @frame_hash_in_arry << frame
     end
   elsif i == 10
-    flame = { i => @flame_arry[9] }
-    @flame_hash_in_arry << flame
+    frame = { i => @frame_arry[9] }
+    @frame_hash_in_arry << frame
     break
   elsif i == 11
     break
   elsif	a == 10
-    flame = { i => 'strike' }
-    @flame_hash_in_arry << flame
+    frame = { i => 'strike' }
+    @frame_hash_in_arry << frame
     @score_integer_array.insert(i, 0)
   else
-    flame = { i => [a, b] }
-    @flame_hash_in_arry << flame
+    frame = { i => [a, b] }
+    @frame_hash_in_arry << frame
   end
 end
 
 point = []
 
-def strike(this_flame)
-  point = @flame_arry[this_flame].sum
-  next_flame = this_flame + 1
-  if @flame_arry[next_flame].nil?
+def strike(this_frame)
+  point = @frame_arry[this_frame].sum
+  next_frame = this_frame + 1
+  if @frame_arry[next_frame].nil?
     point
-  elsif @flame_arry[next_flame][0] == 10
-    special_point = @flame_arry[next_flame][0] + @flame_arry[next_flame + 1][0]
+  elsif @frame_arry[next_frame][0] == 10
+    special_point = @frame_arry[next_frame][0] + @frame_arry[next_frame + 1][0]
     point + special_point
   else
-    special_point = @flame_arry[next_flame][0] + @flame_arry[next_flame][1]
+    special_point = @frame_arry[next_frame][0] + @frame_arry[next_frame][1]
     point + special_point
   end
 end
 
-def spare(this_flame)
-  next_flame = this_flame + 1
-  point = @flame_arry[this_flame].sum
-  special_point = @flame_arry[next_flame][0]
+def spare(this_frame)
+  next_frame = this_frame + 1
+  point = @frame_arry[this_frame].sum
+  special_point = @frame_arry[next_frame][0]
   point + special_point
 end
 
-@flame_hash_in_arry.select do |hash|
-  @flame_hash = hash.to_h
-  @flame_hash.each do |key, value|
+@frame_hash_in_arry.select do |hash|
+  @frame_hash = hash.to_h
+  @frame_hash.each do |key, value|
     if value == 'strike'
-      this_flame = key - 1
-      point << strike(this_flame)
+      this_frame = key - 1
+      point << strike(this_frame)
       break
     elsif (key < 11) && (value.sum == 10)
-      this_flame = key - 1
-      point << spare(this_flame)
+      this_frame = key - 1
+      point << spare(this_frame)
       break
     elsif key < 10
       point << value.sum
