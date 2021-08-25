@@ -18,31 +18,20 @@ score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
       score = [b, 0]
       @flame_arry << score
     end
-    next
   elsif	a == 10
     b = 0
     score = [a, b]
     score_integer_array.insert(i, 0)
     @flame_arry << score
-    next
   else
     score = [a, b]
     @flame_arry << score
   end
 end
 
-unless @flame_arry[10].nil?
-  flame = @flame_arry[10].compact
-  @flame_arry[9] << flame[0]
-end
-
-unless @flame_arry[11].nil?
-  flame = @flame_arry[11].compact
-  @flame_arry[9] << flame[0]
-end
-
-unless @flame_arry[12].nil?
-  flame @flame_arry[12].compact
+@flame_arry[10..12].each do |arry|
+  arry.nil?
+  flame = arry.compact
   @flame_arry[9] << flame[0]
 end
 
@@ -71,7 +60,6 @@ score_integer_array.each_slice(2).with_index(1) do |(a, b), i|
     flame = { i => 'strike' }
     @flame_hash_in_arry << flame
     @score_integer_array.insert(i, 0)
-    next
   else
     flame = { i => [a, b] }
     @flame_hash_in_arry << flame
@@ -80,22 +68,24 @@ end
 
 point = []
 
-def strike
-  point = @flame_arry[@this_flame].sum
-  if @flame_arry[@next_flame].nil?
+def strike(this_flame)
+  point = @flame_arry[this_flame].sum
+  next_flame = this_flame + 1
+  if @flame_arry[next_flame].nil?
     point
-  elsif @flame_arry[@next_flame][0] == 10
-    special_point = @flame_arry[@next_flame][0] + @flame_arry[@next_flame + 1][0]
+  elsif @flame_arry[next_flame][0] == 10
+    special_point = @flame_arry[next_flame][0] + @flame_arry[next_flame + 1][0]
     point + special_point
   else
-    special_point = @flame_arry[@next_flame][0] + @flame_arry[@next_flame][1]
+    special_point = @flame_arry[next_flame][0] + @flame_arry[next_flame][1]
     point + special_point
   end
 end
 
-def spare
-  point = @flame_arry[@this_flame].sum
-  special_point = @flame_arry[@next_flame][0]
+def spare(this_flame)
+  next_flame = this_flame + 1
+  point = @flame_arry[this_flame].sum
+  special_point = @flame_arry[next_flame][0]
   point + special_point
 end
 
@@ -103,14 +93,12 @@ end
   @flame_hash = hash.to_h
   @flame_hash.each do |key, value|
     if value == 'strike'
-      @next_flame = key
-      @this_flame = key - 1
-      point << strike
+      this_flame = key - 1
+      point << strike(this_flame)
       break
     elsif (key < 11) && (value.sum == 10)
-      @next_flame = key
-      @this_flame = key - 1
-      point << spare
+      this_flame = key - 1
+      point << spare(this_flame)
       break
     elsif key < 10
       point << value.sum
