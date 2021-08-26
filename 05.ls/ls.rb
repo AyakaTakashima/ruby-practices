@@ -8,15 +8,27 @@ require 'date'
 
 params = ARGV.getopts('alr')
 
-def ls_command
-  all_file = []
+def file_info
+  @all_file = []
   Dir.glob('*') do |item|
-    all_file << item
-    all_file.sort!
+    @all_file << item
+    @all_file.sort!
   end
+end
 
-  padding_all_file = all_file.map { |file| file.ljust(17) }
-  line = all_file.size / 4
+def file_info_include_invisible_file
+  @all_file = []
+  Dir.foreach('.') do |item|
+    @all_file << item
+    @all_file.sort!
+  end
+end
+
+def ls_command_main
+  file_info
+
+  padding_all_file = @all_file.map { |file| file.ljust(17) }
+  line = @all_file.size / 4
   file_arry = []
   padding_all_file.each_slice(line) do |a, b, c, d|
     file_arry << [a, b, c, d]
@@ -27,17 +39,13 @@ def ls_command
   end
 end
 
-def r_option
-  all_file = []
-  Dir.glob('*') do |item|
-    all_file << item
-    all_file.sort!
-  end
+def r_option_main
+  file_info
 
-  padding_all_file = all_file.map { |file| file.ljust(17) }
+  padding_all_file = @all_file.map { |file| file.ljust(17) }
   reverse_arry = padding_all_file.reverse
 
-  line = all_file.size / 4
+  line = @all_file.size / 4
   file_arry = []
   reverse_arry.each_slice(line) do |a, b, c, d|
     file_arry << [a, b, c, d]
@@ -48,16 +56,12 @@ def r_option
   end
 end
 
-def a_option
-  all_file = []
+def a_option_main
+  file_info_include_invisible_file
 
-  Dir.foreach('.') do |item|
-    all_file << item
-    all_file.sort!
-  end
-  padding_all_file = all_file.map { |file| file.ljust(17) }
+  padding_all_file = @all_file.map { |file| file.ljust(17) }
 
-  line = all_file.size / 5
+  line = @all_file.size / 5
   file_arry = []
   padding_all_file.each_slice(line) do |a, b, c, d|
     file_arry << [a, b, c, d]
@@ -69,11 +73,7 @@ def a_option
 end
 
 def l_option_main
-  @all_file = []
-  Dir.glob('*') do |item|
-    @all_file << item
-    @all_file.sort!
-  end
+  file_info
 
   block_arry = []
   @all_file.each do |file|
@@ -93,12 +93,8 @@ def l_option_main
 end
 
 def alr_option_main
-  @all_file = []
+  file_info_include_invisible_file
 
-  Dir.foreach('.') do |item|
-    @all_file << item
-    @all_file.sort!
-  end
   @all_file.reverse!
 
   block_arry = []
@@ -119,12 +115,7 @@ def alr_option_main
 end
 
 def al_option_main
-  @all_file = []
-
-  Dir.foreach('.') do |item|
-    @all_file << item
-    @all_file.sort!
-  end
+  file_info_include_invisible_file
 
   block_arry = []
   @all_file.each do |file|
@@ -144,17 +135,12 @@ def al_option_main
 end
 
 def ar_option_main
-  all_file = []
+  file_info_include_invisible_file
 
-  Dir.foreach('.') do |item|
-    all_file << item
-    all_file.sort!
-  end
-
-  padding_all_file = all_file.map { |file| file.ljust(17) }
+  padding_all_file = @all_file.map { |file| file.ljust(17) }
   reverse_arry = padding_all_file.reverse
 
-  line = all_file.size / 4
+  line = @all_file.size / 4
   file_arry = []
   reverse_arry.each_slice(line) do |a, b, c, d|
     file_arry << [a, b, c, d]
@@ -166,11 +152,8 @@ def ar_option_main
 end
 
 def lr_option_main
-  @all_file = []
-  Dir.glob('*') do |item|
-    @all_file << item
-    @all_file.sort!
-  end
+  file_info
+
   @all_file.reverse!
 
   block_arry = []
@@ -360,10 +343,9 @@ end
 
 def file_name_data
   @g = []
-  @file_name.each do |name|
+  @detail << @file_name.each do |name|
     @g << name
   end
-  @detail << @g
 end
 
 def data_get
@@ -385,9 +367,9 @@ elsif params['l'] && params['r']
 elsif params['l']
   l_option_main
 elsif params['a']
-  a_option
+  a_option_main
 elsif params['r']
-  r_option
+  r_option_main
 else
-  ls_command
+  ls_command_main
 end
