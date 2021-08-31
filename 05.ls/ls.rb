@@ -37,12 +37,12 @@ def ls_command(option)
   padding_all_file.reverse! if option[0] == 'r'
 
   line = all_file.size / 4
-  file_arry = []
+  file_array = []
   padding_all_file.each_slice(line) do |a, b, c, d|
-    file_arry << [a, b, c, d]
+    file_array << [a, b, c, d]
   end
 
-  file_column = file_arry.transpose
+  file_column = file_array.transpose
   file_column.each do |x|
     puts x.join(' ')
   end
@@ -58,17 +58,17 @@ def l_option_main(option)
 
   all_file.reverse! if option[0] == 'r'
 
-  block_arry = []
+  block_array = []
   all_file.each do |file|
     fs = File::Stat.new(file)
-    block_arry << fs.blocks
+    block_array << fs.blocks
   end
-  block = block_arry.sum
+  block = block_array.sum
   puts "total #{block}"
 
-  file_arry = data_get(all_file)
+  file_array = data_get(all_file)
 
-  file_column = file_arry.transpose
+  file_column = file_array.transpose
   file_column.each do |x|
     puts x.join(' ')
   end
@@ -200,7 +200,6 @@ def from_link_to_group_data(hard_link, owner, group, permission_detail)
 end
 
 def permission_data(permission)
-  permission_detail = []
   permission_data_array = []
 
   permission.each do |symbol|
@@ -212,19 +211,21 @@ def permission_data(permission)
     permission_data_array << other_user_permission(string_symbol)
   end
 
-  permission_arry = []
-  permission_data_array.each_slice(5) do |arry|
-    permission_arry << arry.compact.join.ljust(12, ' ')
+  permission_array = []
+  permission_data_array.each_slice(5) do |array|
+    permission_array << array.compact.join.ljust(12, ' ')
   end
-  permission_detail << permission_arry
+
+  permission_detail = []
+  permission_detail << permission_array
 end
 
 def from_bytes_to_time_data(bytes, time, link_to_group_detail)
-  bytes_arry = []
+  bytes_array = []
   bytes.each do |byte|
-    bytes_arry << byte.to_s.rjust(4, ' ')
+    bytes_array << byte.to_s.rjust(4, ' ')
   end
-  link_to_group_detail << bytes_arry
+  link_to_group_detail << bytes_array
 
   time_array = []
   time.each do |t|
