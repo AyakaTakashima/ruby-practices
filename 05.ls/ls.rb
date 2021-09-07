@@ -6,71 +6,48 @@ require 'optparse'
 require 'etc'
 require 'date'
 
-def file_info
-  all_file = []
-  Dir.glob('*') do |item|
-    all_file << item
-    all_file.sort!
-  end
-  all_file
+def fixed_line(files)
+  line = 3
+
+  column = if files.size > line
+             if (files.size % line) != 0
+              (files.size / line) + 1
+             else
+              files.size / line
+             end
+           else files.size < line
+             1
+           end
 end
 
-def file_info_include_invisible_file
-  all_file = []
-  Dir.foreach('.') do |item|
-    all_file << item
-    all_file.sort!
-  end
-  all_file
-end
+def ls_command(files)
+  padded_files = files.map { |file| file.ljust(17) }
 
-def ls_command(option)
-  all_file =
-    if option[1] == 'a'
-      file_info_include_invisible_file
-    else
-      file_info
-    end
+  column = fixed_line(files)
 
-  padding_all_file = all_file.map { |file| file.ljust(17) }
-
-  padding_all_file.reverse! if option[0] == 'r'
-
-  line = all_file.size / 4
-  file_array = []
-  padding_all_file.each_slice(line) do |a, b, c, d|
-    file_array << [a, b, c, d]
+  file_table = []
+  padded_files.each_slice(column) do |a, b, c|
+    file_table << [a, b, c]
   end
 
-  file_column = file_array.transpose
-  file_column.each do |x|
-    puts x.join(' ')
+  file_table.transpose.each do |row_files|
+    puts row_files.join(' ')
   end
 end
 
-def l_option_main(option)
-  all_file =
-    if option[1] == 'a'
-      file_info_include_invisible_file
-    else
-      file_info
-    end
-
-  all_file.reverse! if option[0] == 'r'
-
+def l_option_main(files)
   block_array = []
-  all_file.each do |file|
+  files.each do |file|
     fs = File::Stat.new(file)
     block_array << fs.blocks
   end
   block = block_array.sum
   puts "total #{block}"
 
-  file_array = data_get(all_file)
+  file_table = data_get(files)
 
-  file_column = file_array.transpose
-  file_column.each do |x|
-    puts x.join(' ')
+  file_table.transpose.each do |row_files|
+    puts row_files.join(' ')
   end
 end
 
@@ -157,52 +134,52 @@ def other_user_permission(string_symbol)
   end
 end
 
-def detail_data_get(all_file)
-  permission = []
-  hard_link = []
-  owner = []
-  group = []
+def detail_data_get(files)
+  permissions = []
+  hard_links = []
+  owners = []
+  groups = []
   bytes = []
-  time = []
-  file_name = []
+  times = []
+  file_names = []
 
-  all_file.each do |file|
+  files.each do |file|
     fs = File::Stat.new(file)
-    permission << fs.mode
-    hard_link << fs.nlink
-    owner << fs.uid
-    group << fs.gid
+    permissions << fs.mode
+    hard_links << fs.nlink
+    owners << fs.uid
+    groups << fs.gid
     bytes << fs.size
-    time << fs.atime
-    file_name << file
+    times << fs.atime
+    file_names << file
   end
-  [permission, hard_link, owner, group, bytes, time, file_name]
+  [permissions, hard_links, owners, groups, bytes, times, file_names]
 end
 
-def from_link_to_group_data(hard_link, owner, group, permission_detail)
+def from_link_to_group_data(hard_links, owners, groups, permission_details)
   number_of_link = []
-  hard_link.each do |link|
+  hard_links.each do |link|
     number_of_link << link.to_s.rjust(2, ' ')
   end
-  permission_detail << number_of_link
+  permission_details << number_of_link
 
   owner_names = []
-  owner.each do |id|
+  owners.each do |id|
     owner_names << Etc.getpwuid(id).name.ljust(15, ' ')
   end
-  permission_detail << owner_names
+  permission_details << owner_names
 
   group_names = []
-  group.each do |id|
+  groups.each do |id|
     group_names << Etc.getgrgid(id).name
   end
-  permission_detail << group_names
+  permission_details << group_names
 end
 
-def permission_data(permission)
+def permission_data(permissions)
   permission_data_array = []
 
-  permission.each do |symbol|
+  permissions.each do |symbol|
     string_symbol = symbol.to_s(8).rjust(6, '0')
     permission_data_array << file_type(string_symbol)
     permission_data_array << special_permission(string_symbol)
@@ -216,19 +193,19 @@ def permission_data(permission)
     permission_array << array.compact.join.ljust(12, ' ')
   end
 
-  permission_detail = []
-  permission_detail << permission_array
+  permission_details = []
+  permission_details << permission_array
 end
 
-def from_bytes_to_time_data(bytes, time, link_to_group_detail)
+def from_bytes_to_time_data(bytes, times, link_to_group_details)
   bytes_array = []
   bytes.each do |byte|
     bytes_array << byte.to_s.rjust(4, ' ')
   end
-  link_to_group_detail << bytes_array
+  link_to_group_details << bytes_array
 
   time_array = []
-  time.each do |t|
+  times.each do |t|
     year = t.year
     month = t.month
     date = t.day
@@ -241,46 +218,39 @@ def from_bytes_to_time_data(bytes, time, link_to_group_detail)
                     t.strftime('%-m %e %H:%M')
                   end
   end
-  link_to_group_detail << time_array
+  link_to_group_details << time_array
 end
 
-def file_name_data(file_name, bytes_to_time_detail)
-  file_names = []
-  bytes_to_time_detail << file_name.each do |name|
-    file_names << name
+def file_name_data(file_names, bytes_to_time_details)
+  file_names_array = []
+  bytes_to_time_details << file_names.each do |name|
+    file_names_array << name
   end
 
-  bytes_to_time_detail
+  bytes_to_time_details
 end
 
-def data_get(all_file)
-  permission, hard_link, owner, group, bytes, time, file_name = detail_data_get(all_file)
-  permission_detail = permission_data(permission)
-  link_to_group_detail = from_link_to_group_data(hard_link, owner, group, permission_detail)
-  bytes_to_time_detail = from_bytes_to_time_data(bytes, time, link_to_group_detail)
-  file_name_data(file_name, bytes_to_time_detail)
+def data_get(files)
+  permissions, hard_links, owners, groups, bytes, times, file_names = detail_data_get(files)
+  permission_details = permission_data(permissions)
+  link_to_group_details = from_link_to_group_data(hard_links, owners, groups, permission_details)
+  bytes_to_time_details = from_bytes_to_time_data(bytes, times, link_to_group_details)
+  file_name_data(file_names, bytes_to_time_details)
 end
 
 params = ARGV.getopts('alr')
 
-option = []
+files =
+if params['a']
+  Dir.glob('*', File::FNM_DOTMATCH).sort
+else
+  Dir.glob('*').sort
+end
 
-option <<
-  if params['r']
-    'r'
-  else
-    'nil'
-  end
-
-option <<
-  if params['a']
-    'a'
-  else
-    'nil'
-  end
+files.reverse! if params['r']
 
 if params['l']
-  l_option_main(option)
+  l_option_main(files)
 else
-  ls_command(option)
+  ls_command(files)
 end
