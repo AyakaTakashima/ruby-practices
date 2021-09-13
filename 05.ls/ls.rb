@@ -97,7 +97,7 @@ def build_permission(char)
     '4' => 'r--',
     '5' => 'r-x',
     '6' => 'rw-',
-    '7' => 'rwx'
+    '7' => 'rwx',
   }
   permission_info[char]
 end
@@ -106,15 +106,10 @@ def build_time_info(file_detail)
   file_creation_date = file_detail[:atime].to_date
   half_years_ago = Date.today.prev_month(6)
 
-  month = file_detail[:atime].strftime('%-m').rjust(2, ' ')
-  date = file_detail[:atime].strftime('%e').rjust(2, ' ')
-
   if file_creation_date <= half_years_ago
-    year = file_detail[:atime].strftime('%Y').rjust(5, ' ')
-    [month, date, year]
+    file_detail[:atime].strftime('%_m %_e %Y ')
   else
-    time = file_detail[:atime].strftime('%H:%M')
-    [month, date, time]
+    file_detail[:atime].strftime('%_m %_e %H:%M')
   end
 end
 
