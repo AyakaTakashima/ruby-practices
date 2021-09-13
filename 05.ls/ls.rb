@@ -19,25 +19,110 @@ def main
   files.reverse! if params['r']
 
   if params['l']
-    l_option_main(files)
+    display_file_list_with_details(files)
   else
-    ls_command(files)
+    display_file_list(files)
+  end
+end
+
+def display_file_list_with_details(files)
+  block = files.sum do |file|
+    File::Stat.new(file).blocks
+  end
+  puts "total #{block}"
+
+  file_table = build_file_info(files)
+
+  file_table.each do |row|
+    puts row.join(' ')
+  end
+end
+
+def build_file_info(files)
+  file_details = build_file_details(files)
+
+  file_details.map do |file_detail|
+    row_data = []
+    row_data << build_permission_info(file_detail)
+    row_data << file_detail[:nlink].to_s.rjust(3, ' ')
+    row_data << Etc.getpwuid(file_detail[:uid]).name.ljust(15, ' ')
+    row_data << Etc.getgrgid(file_detail[:gid]).name
+    row_data << file_detail[:size].to_s.rjust(4, ' ')
+    row_data << build_time_info(file_detail)
+    row_data << file_detail[:file_name]
+  end
+end
+
+def build_file_details(files)
+  files.map do |file|
+    fs = File::Stat.new(file)
+    file_detail = {}
+    file_detail[:mode] = fs.mode
+    file_detail[:nlink] = fs.nlink
+    file_detail[:uid] = fs.uid
+    file_detail[:gid] = fs.gid
+    file_detail[:size] = fs.size
+    file_detail[:atime] = fs.atime
+    file_detail[:file_name] = file
+    file_detail
+  end
+end
+
+def build_permission_info(file_detail)
+  permission_digit = file_detail[:mode].to_s(8).rjust(6, '0')
+  data_array = []
+  data_array << build_file_type_info(permission_digit)
+  data_array << build_permission(permission_digit[3])
+  data_array << build_permission(permission_digit[4])
+  data_array << build_permission(permission_digit[5])
+
+  data_array.join
+end
+
+def build_file_type_info(permission_digit)
+  file_type_info = {
+    '04' => 'd',
+    '10' => '-',
+    '12' => 'l'
+  }
+  file_type_info[permission_digit[0..1]]
+end
+
+def build_permission(char)
+  permission_info = {
+    '0' => '---',
+    '1' => '--x',
+    '2' => '-w-',
+    '3' => '-wx',
+    '4' => 'r--',
+    '5' => 'r-x',
+    '6' => 'rw-',
+    '7' => 'rwx'
+  }
+  permission_info[char]
+end
+
+def build_time_info(file_detail)
+  file_creation_date = file_detail[:atime].to_date
+  half_years_ago = Date.today.prev_month(6)
+
+  month = file_detail[:atime].strftime('%-m').rjust(2, ' ')
+  date = file_detail[:atime].strftime('%e').rjust(2, ' ')
+
+  if file_creation_date <= half_years_ago
+    year = file_detail[:atime].strftime('%Y').rjust(5, ' ')
+    [month, date, year]
+  else
+    time = file_detail[:atime].strftime('%H:%M')
+    [month, date, time]
   end
 end
 
 COLUMN_COUNT = 3
-def calc_row_count(files)
-  if files.size > COLUMN_COUNT
-    (files.size.to_f / COLUMN_COUNT).ceil if files.size > COLUMN_COUNT
-  else
-    1
-  end
-end
-
-def ls_command(files)
+def display_file_list(files)
   padded_files = files.map { |file| file.ljust(17) }
 
-  row_count = calc_row_count(files)
+  row_count = (files.size.to_f / COLUMN_COUNT).ceil
 
   file_table = []
   # transposeでエラーを起こさないよう、nilを入れるためにa, b, cへ一つずつ渡しています
@@ -48,123 +133,6 @@ def ls_command(files)
   file_table.transpose.each do |row_files|
     puts row_files.join(' ')
   end
-end
-
-def l_option_main(files)
-  block = files.sum do |file|
-    File::Stat.new(file).blocks
-  end
-  puts "total #{block}"
-
-  file_table = get_data(files)
-
-  file_table.each do |row|
-    puts row.join(' ')
-  end
-end
-
-def file_type(permission_digit)
-  case permission_digit[0..1]
-  when '04'
-    'd'
-  when '10'
-    '-'
-  else
-    'l'
-  end
-end
-
-def build_permission(char)
-  case char
-  when '0'
-    '---'
-  when '1'
-    '--x'
-  when '2'
-    '-w-'
-  when '3'
-    '-wx'
-  when '4'
-    'r--'
-  when '5'
-    'r-x'
-  when '6'
-    'rw-'
-  else
-    'rwx'
-  end
-end
-
-def build_file_details(files)
-  files.map do |file|
-    fs = File::Stat.new(file)
-    file_detail = {}
-    file_detail[:permissions] = fs.mode
-    file_detail[:hard_links] = fs.nlink
-    file_detail[:owners] = fs.uid
-    file_detail[:groups] = fs.gid
-    file_detail[:bytes] = fs.size
-    file_detail[:times] = fs.atime
-    file_detail[:names] = file
-    file_detail
-  end
-end
-
-def get_permission_data(file_detail)
-  permission_digit = file_detail[:permissions].to_s(8).rjust(6, '0')
-  data_array = []
-  data_array << file_type(permission_digit)
-  data_array << build_permission(permission_digit[3])
-  data_array << build_permission(permission_digit[4])
-  data_array << build_permission(permission_digit[5])
-
-  data_array.join
-end
-
-def get_owner_and_group_names(file_detail)
-  permission_details = []
-  owner_names = Etc.getpwuid(file_detail[:owners]).name.ljust(15, ' ')
-  permission_details << owner_names
-
-  group_names = Etc.getgrgid(file_detail[:groups]).name
-  permission_details << group_names
-end
-
-def get_time_data(file_detail)
-  year = file_detail[:times].year
-  month = file_detail[:times].month
-  date = file_detail[:times].day
-  file_created_day = Date.new(year, month, date)
-  half_years_ago = Date.today.prev_month(6)
-
-  month = file_detail[:times].strftime('%-m').rjust(2, ' ')
-  date = file_detail[:times].strftime('%e').rjust(2, ' ')
-
-  if file_created_day <= half_years_ago
-    year = file_detail[:times].strftime('%Y').rjust(5, ' ')
-    [month, date, year]
-  else
-    time = file_detail[:times].strftime('%H:%M')
-    [month, date, time]
-  end
-end
-
-def get_data(files)
-  file_details = build_file_details(files)
-
-  all_data = []
-  file_details.each do |file_detail|
-    row_data = []
-    row_data << get_permission_data(file_detail)
-    row_data << file_detail[:hard_links].to_s.rjust(3, ' ')
-    row_data << get_owner_and_group_names(file_detail)
-    row_data << file_detail[:bytes].to_s.rjust(4, ' ')
-    row_data << get_time_data(file_detail)
-    row_data << file_detail[:names]
-
-    all_data << row_data
-  end
-  all_data
 end
 
 main
