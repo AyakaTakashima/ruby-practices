@@ -72,10 +72,10 @@ end
 def build_permission_info(file_detail)
   permission_digit = file_detail[:mode].to_s(8).rjust(6, '0')
   [
-  FILE_TYPE_TABLE[permission_digit[0..1]],
-  PERMISSION_TABLE[permission_digit[3]],
-  PERMISSION_TABLE[permission_digit[4]],
-  PERMISSION_TABLE[permission_digit[5]]
+    FILE_TYPE_TABLE[permission_digit[0..1]],
+    PERMISSION_TABLE[permission_digit[3]],
+    PERMISSION_TABLE[permission_digit[4]],
+    PERMISSION_TABLE[permission_digit[5]]
   ].join
 end
 
@@ -83,7 +83,7 @@ FILE_TYPE_TABLE = {
   '04' => 'd',
   '10' => '-',
   '12' => 'l'
-}
+}.freeze
 
 PERMISSION_TABLE = {
   '0' => '---',
@@ -93,8 +93,8 @@ PERMISSION_TABLE = {
   '4' => 'r--',
   '5' => 'r-x',
   '6' => 'rw-',
-  '7' => 'rwx',
-}
+  '7' => 'rwx'
+}.freeze
 
 def build_time_info(file_detail)
   file_creation_date = file_detail[:atime].to_date
