@@ -33,7 +33,7 @@ def count_word(option)
   }
   padded_result = create_padded_result(option, word_count_info)
 
-  puts padded_result.join(' ')
+  puts padded_result.join
 end
 
 def count_word_of_argv(option)
@@ -97,14 +97,18 @@ end
 def create_padded_result(option, count_info_list)
   count_info_list.map do |count_info_hash|
     each_file_count_info = []
-    each_file_count_info << count_info_hash[:rows_count].to_s.rjust(8)
+    each_file_count_info << ' ' + count_info_hash[:rows_count].to_s.rjust(format_value)
     unless option['l']
-      each_file_count_info << count_info_hash[:words_count].to_s.rjust(7)
-      each_file_count_info << count_info_hash[:bytes].to_s.rjust(7)
+      each_file_count_info << count_info_hash[:words_count].to_s.rjust(format_value)
+      each_file_count_info << count_info_hash[:bytes].to_s.rjust(format_value)
     end
     each_file_count_info << count_info_hash[:title] if ARGV
     each_file_count_info
   end
+end
+
+def format_value
+  7
 end
 
 main
