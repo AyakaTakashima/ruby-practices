@@ -6,59 +6,61 @@ require 'optparse'
 
 def main
   option = ARGV.getopts('l')
+  file_paths = ARGV
 
-  if ARGV.empty?
-    count_word(option)
+  if file_paths.empty?
+    count_word(option, file_paths)
   else
-    count_word_of_argv(option)
+    count_word_of_argv(option, file_paths)
   end
 end
 
-def count_word(option)
+def count_word(option, file_paths)
   text = readlines.join
+  file = nil
   word_count_info = []
-  word_count_info << count_file_info(file = nil, text)
+  word_count_info << count_file_info(file, text)
 
-  padded_result = create_padded_result(option, word_count_info)
+  padded_result = create_padded_result(option, word_count_info, file_paths)
 
   puts padded_result.join
 end
 
-def count_word_of_argv(option)
-  count_info_list = build_count_info_list
+def count_word_of_argv(option, file_paths)
+  count_info_list = build_count_info_list(file_paths)
 
-  if ARGV.size > 1
-    total_words_count = 0
-    total_rows_count = 0
-    total_bytes = 0
-  
-    count_info_list.map do |data_in_hash|
-      total_rows_count += data_in_hash[:rows_count]
-      total_words_count += data_in_hash[:words_count] unless option['l']
-      total_bytes += data_in_hash[:bytes] unless option['l']
-    end
-    total_hash = {}
-    total_hash[:rows_count] = total_rows_count
-    total_hash[:words_count] = total_words_count unless option['l']
-    total_hash[:bytes] = total_bytes unless option['l']
-    total_hash[:title] = 'total'
-
-    count_info_list << total_hash
-    padded_result = create_padded_result(option, count_info_list)
+  if file_paths.size > 1
+    build_total_hash(option, count_info_list)
+    padded_result = create_padded_result(option, count_info_list, file_paths)
   else
-    unless count_info_list == [nil]
-      padded_result = create_padded_result(option, count_info_list)
-    end
+    padded_result = create_padded_result(option, count_info_list, file_paths) unless count_info_list == [nil]
   end
 
-  padded_result.each do |result_array|
-    puts result_array.join(' ')
-  end unless padded_result == nil
+  padded_result.each { |result_array| puts result_array.join(' ') } if padded_result
 end
 
-def build_count_info_list
+def build_total_hash(option, count_info_list)
+  total_words_count = 0
+  total_rows_count = 0
+  total_bytes = 0
+
+  count_info_list.map do |data_in_hash|
+    total_rows_count += data_in_hash[:rows_count]
+    total_words_count += data_in_hash[:words_count] unless option['l']
+    total_bytes += data_in_hash[:bytes] unless option['l']
+  end
+  total_hash = {}
+  total_hash[:rows_count] = total_rows_count
+  total_hash[:words_count] = total_words_count unless option['l']
+  total_hash[:bytes] = total_bytes unless option['l']
+  total_hash[:title] = 'total'
+
+  count_info_list << total_hash
+end
+
+def build_count_info_list(file_paths)
   ret = []
-  ARGV.each do |file_path|
+  file_paths.each do |file_path|
     if File.exist?(file_path)
       ret << check_file_or_directory(file_path)
     else
@@ -95,15 +97,15 @@ def count_file_info(file, text)
   count_info
 end
 
-def create_padded_result(option, count_info_list)
+def create_padded_result(option, count_info_list, file_paths)
   count_info_list.map do |count_info_hash|
     each_file_count_info = []
-    each_file_count_info << ' ' + count_info_hash[:rows_count].to_s.rjust(format_value)
+    each_file_count_info << " #{count_info_hash[:rows_count].to_s.rjust(format_value)}"
     unless option['l']
       each_file_count_info << count_info_hash[:words_count].to_s.rjust(format_value)
       each_file_count_info << count_info_hash[:bytes].to_s.rjust(format_value)
     end
-    each_file_count_info << count_info_hash[:title] if ARGV
+    each_file_count_info << count_info_hash[:title] if file_paths
     each_file_count_info
   end
 end
