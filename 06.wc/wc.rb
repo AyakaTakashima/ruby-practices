@@ -7,7 +7,7 @@ require 'optparse'
 def main
   option = ARGV.getopts('l')
 
-  if ARGV.empty?#[0].nil?
+  if ARGV.empty?
     count_word(option)
   else
     count_word_of_argv(option)
@@ -15,22 +15,10 @@ def main
 end
 
 def count_word(option)
-  rows = readlines
-  words_count_array = []
-  bytes_count_array = []
-
-  rows.each do |row|
-    row.chomp!
-    words_count_array << row.split(' ').size
-    bytes_count_array << "#{row}\n".bytesize
-  end
-
+  text = readlines.join
   word_count_info = []
-  word_count_info << {
-    rows_count: rows.size,
-    words_count: words_count_array.sum,
-    bytes: bytes_count_array.sum
-  }
+  word_count_info << count_file_info(file = nil, text)
+
   padded_result = create_padded_result(option, word_count_info)
 
   puts padded_result.join
@@ -57,6 +45,10 @@ def count_word_of_argv(option)
 
     count_info_list << total_hash
     padded_result = create_padded_result(option, count_info_list)
+  else
+    unless count_info_list == [nil]
+      padded_result = create_padded_result(option, count_info_list)
+    end
   end
 
   padded_result.each do |result_array|
@@ -68,7 +60,7 @@ def build_count_info_list
   ret = []
   ARGV.each do |file_path|
     if File.exist?(file_path)
-      ret << count_file_info(file_path)
+      ret << check_file_or_directory(file_path)
     else
       puts "wc: #{file_path}: open: No such file or directory"
     end
@@ -76,20 +68,29 @@ def build_count_info_list
   ret
 end
 
-def count_file_info(file)
+def check_file_or_directory(file)
   if FileTest.directory?(file)
     puts "wc: #{file}: read: Is a directory"
   else
     text = File.read(file)
-    words = text.each_line.flat_map do |row|
-      row.split(' ')
-    end
+    count_info = count_file_info(file, text)
+  end
+  count_info
+end
 
-    count_info = {}
-    count_info[:words_count] = words.size
-    count_info[:rows_count] = text.count("\n")
+def count_file_info(file, text)
+  words = text.each_line.flat_map do |row|
+    row.split(' ')
+  end
+
+  count_info = {}
+  count_info[:words_count] = words.size
+  count_info[:rows_count] = text.count("\n")
+  if file
     count_info[:bytes] = FileTest.size(file)
     count_info[:title] = file
+  else
+    count_info[:bytes] = text.size
   end
   count_info
 end
