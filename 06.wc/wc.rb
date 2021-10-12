@@ -36,7 +36,7 @@ def count_word_of_argv(option, file_paths)
     padded_result = create_padded_result(option, count_info_list, file_paths) unless count_info_list == [nil]
   end
 
-  padded_result.each { |result_array| puts result_array.join(' ') } if padded_result
+  padded_result.each { |result_array| puts result_array.join(' ') }
 end
 
 def build_total_hash(option, count_info_list)
@@ -53,7 +53,7 @@ def build_total_hash(option, count_info_list)
   total_hash[:rows_count] = total_rows_count
   total_hash[:words_count] = total_words_count unless option['l']
   total_hash[:bytes] = total_bytes unless option['l']
-  total_hash[:title] = 'total'
+  total_hash[:file_name] = 'total'
 
   count_info_list << total_hash
 end
@@ -73,11 +73,11 @@ end
 def check_file_or_directory(file)
   if FileTest.directory?(file)
     puts "wc: #{file}: read: Is a directory"
+    []
   else
     text = File.read(file)
-    count_info = count_file_info(file, text)
+    count_file_info(file, text)
   end
-  count_info
 end
 
 def count_file_info(file, text)
@@ -90,7 +90,7 @@ def count_file_info(file, text)
   count_info[:rows_count] = text.count("\n")
   if file
     count_info[:bytes] = FileTest.size(file)
-    count_info[:title] = file
+    count_info[:file_name] = file
   else
     count_info[:bytes] = text.size
   end
@@ -100,12 +100,14 @@ end
 def create_padded_result(option, count_info_list, file_paths)
   count_info_list.map do |count_info_hash|
     each_file_count_info = []
-    each_file_count_info << " #{count_info_hash[:rows_count].to_s.rjust(format_value)}"
-    unless option['l']
-      each_file_count_info << count_info_hash[:words_count].to_s.rjust(format_value)
-      each_file_count_info << count_info_hash[:bytes].to_s.rjust(format_value)
+    unless count_info_hash == []
+      each_file_count_info << " #{count_info_hash[:rows_count].to_s.rjust(format_value)}"
+      unless option['l']
+        each_file_count_info << count_info_hash[:words_count].to_s.rjust(format_value)
+        each_file_count_info << count_info_hash[:bytes].to_s.rjust(format_value)
+      end
+      each_file_count_info << count_info_hash[:file_name] if file_paths
     end
-    each_file_count_info << count_info_hash[:title] if file_paths
     each_file_count_info
   end
 end
