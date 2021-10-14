@@ -9,19 +9,19 @@ def main
   file_paths = ARGV
 
   if file_paths.empty?
-    count_word(option, file_paths)
+    count_word(option)
   else
     count_word_of_argv(option, file_paths)
   end
 end
 
-def count_word(option, file_paths)
+def count_word(option)
   text = readlines.join
   file = nil
   word_count_info = []
   word_count_info << count_file_info(file, text)
 
-  padded_result = create_padded_result(option, word_count_info, file_paths)
+  padded_result = create_padded_result(option, word_count_info)
 
   puts padded_result.join
 end
@@ -29,7 +29,7 @@ end
 def count_word_of_argv(option, file_paths)
   count_info_list = build_count_info_list(file_paths)
   count_info_list << build_total_hash(count_info_list) if file_paths.size > 1
-  padded_result = create_padded_result(option, count_info_list, file_paths)
+  padded_result = create_padded_result(option, count_info_list)
   padded_result.each { |result_array| puts result_array.join(' ') }
 end
 
@@ -74,16 +74,13 @@ def count_file_info(file, text)
   count_info = {}
   count_info[:words_count] = words.size
   count_info[:rows_count] = text.count("\n")
-  if file
-    count_info[:bytes] = FileTest.size(file)
-    count_info[:file_name] = file
-  else
-    count_info[:bytes] = text.size
-  end
+  count_info[:bytes] = text.size
+  count_info[:file_name] = file
+
   count_info
 end
 
-def create_padded_result(option, count_info_list, file_paths)
+def create_padded_result(option, count_info_list)
   count_info_list.map do |count_info|
     each_file_count_info = []
     each_file_count_info << " #{format_value(count_info[:rows_count])}"
@@ -91,8 +88,8 @@ def create_padded_result(option, count_info_list, file_paths)
       each_file_count_info << format_value(count_info[:words_count])
       each_file_count_info << format_value(count_info[:bytes])
     end
-    each_file_count_info << count_info[:file_name] if file_paths
-    each_file_count_info # .join
+    each_file_count_info << count_info[:file_name] if count_info[:file_name]
+    each_file_count_info
   end
 end
 
