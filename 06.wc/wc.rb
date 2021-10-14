@@ -98,22 +98,22 @@ def count_file_info(file, text)
 end
 
 def create_padded_result(option, count_info_list, file_paths)
-  count_info_list.map do |count_info_hash|
+  count_info_list.map do |count_info|
     each_file_count_info = []
-    unless count_info_hash == []
-      each_file_count_info << " #{count_info_hash[:rows_count].to_s.rjust(format_value)}"
+    unless count_info == []
+      each_file_count_info << " #{format_value(count_info[:rows_count])}"
       unless option['l']
-        each_file_count_info << count_info_hash[:words_count].to_s.rjust(format_value)
-        each_file_count_info << count_info_hash[:bytes].to_s.rjust(format_value)
+        each_file_count_info << format_value(count_info[:words_count])
+        each_file_count_info << format_value(count_info[:bytes])
       end
-      each_file_count_info << count_info_hash[:file_name] if file_paths
+      each_file_count_info << count_info[:file_name] if file_paths
     end
     each_file_count_info
   end
 end
 
-def format_value
-  7
+def format_value(value)
+  value.to_s.rjust(7)
 end
 
 main
