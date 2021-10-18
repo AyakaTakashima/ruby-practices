@@ -18,12 +18,11 @@ end
 def count_word(option)
   text = readlines.join
   file = nil
-  word_count_info = []
-  word_count_info << count_file_info(file, text)
+  word_count_info = [count_file_info(file, text)]
 
   padded_result = create_padded_result(option, word_count_info)
 
-  puts padded_result.join
+  puts padded_result.join(' ')
 end
 
 def count_word_of_argv(option, file_paths)
@@ -34,10 +33,7 @@ def count_word_of_argv(option, file_paths)
 end
 
 def build_total_hash(count_info_list)
-  total_hash = {}
-  total_hash[:rows_count] = 0
-  total_hash[:words_count] = 0
-  total_hash[:bytes] = 0
+  total_hash = { rows_count: 0, words_count: 0, bytes: 0 }
 
   count_info_list.map do |data_in_hash|
     total_hash[:rows_count] += data_in_hash[:rows_count]
@@ -71,13 +67,12 @@ def count_file_info(file, text)
     row.split(' ')
   end
 
-  count_info = {}
-  count_info[:words_count] = words.size
-  count_info[:rows_count] = text.count("\n")
-  count_info[:bytes] = text.size
-  count_info[:file_name] = file
-
-  count_info
+  {
+    words_count: words.size,
+    rows_count: text.count("\n"),
+    bytes: text.size,
+    file_name: file
+  }
 end
 
 def create_padded_result(option, count_info_list)
