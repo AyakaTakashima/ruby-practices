@@ -9,23 +9,23 @@ def main
   file_paths = ARGV
 
   if file_paths.empty?
-    count_word(option)
+    puts_result_of_word_count(option)
   else
-    count_word_of_argv(option, file_paths)
+    puts_result_of_counted_file_info(option, file_paths)
   end
 end
 
-def count_word(option)
+def puts_result_of_word_count(option)
   text = readlines.join
   file = nil
-  word_count_info = [count_file_info(file, text)]
+  word_count_info = [build_file_info(file, text)]
 
   padded_result = create_padded_result(option, word_count_info)
 
   puts padded_result.join(' ')
 end
 
-def count_word_of_argv(option, file_paths)
+def puts_result_of_counted_file_info(option, file_paths)
   count_info_list = build_count_info_list(file_paths)
   count_info_list << build_total_hash(count_info_list) if file_paths.size > 1
   padded_result = create_padded_result(option, count_info_list)
@@ -53,7 +53,7 @@ def build_count_info_list(file_paths)
         puts "wc: #{file_path}: read: Is a directory"
       else
         text = File.read(file_path)
-        ret << count_file_info(file_path, text)
+        ret << build_file_info(file_path, text)
       end
     else
       puts "wc: #{file_path}: open: No such file or directory"
@@ -62,7 +62,7 @@ def build_count_info_list(file_paths)
   ret
 end
 
-def count_file_info(file, text)
+def build_file_info(file, text)
   words = text.each_line.flat_map do |row|
     row.split(' ')
   end
