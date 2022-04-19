@@ -7,6 +7,6 @@ class Shot
   end
 
   def score
-    @score = @shots[0].split(',').map { |mark| mark == 'X' ? 10 : mark.to_i }
+    @shots[0].split(',').map { |mark| mark == 'X' ? 10 : mark.to_i }
   end
 end
