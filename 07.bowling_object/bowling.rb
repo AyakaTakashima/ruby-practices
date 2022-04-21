@@ -2,16 +2,19 @@
 # frozen_string_literal: true
 
 require './shot'
-require './frame'
 require './game'
+require './score'
 
 def calculate_score(pinfall_text)
-  shots = Shot.new(pinfall_text)
-  all_shots = shots.score
-  frame = Frame.new(all_shots)
-  frames = frame.build_frame
-  game = Game.new(frames)
-  p game.score_calculate
+  score_numbers = pinfall_text[0].split(',').map do |mark|
+    numbers = Shot.new(mark)
+    numbers.score
+  end
+
+  scores = Game.new(score_numbers)
+  frame_arry = scores.build_frame
+  score = Score.new(frame_arry)
+  p score.score_calculate
 end
 
 calculate_score(ARGV) if __FILE__ == $PROGRAM_NAME

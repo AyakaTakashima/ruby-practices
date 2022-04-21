@@ -2,41 +2,29 @@
 # frozen_string_literal: true
 
 class Game
-  def initialize(frames)
-    @frames = frames
+  def initialize(score_numbers)
+    @score_numbers = score_numbers
   end
 
-  def score_calculate
-    @frames.each.with_index.sum do |frame, i|
-      if i == 9
-        frame.sum
-      elsif frame[0] == 10
-        frame_index = i
-        strike(frame_index)
-      elsif frame.sum == 10
-        frame_index = i
-        spare(frame_index)
-      else
-        frame.sum
+  def build_frame
+    shots = []
+    frame_arry = []
+    @score_numbers.each do |score|
+      shots << score
+      if strike?(shots[0]) && (frame_arry.count < 9)
+        frame_arry << shots
+        shots = []
+      elsif (frame_arry.count == 10) && !shots.empty?
+        frame_arry[9].concat shots
+      elsif shots.count == 2
+        frame_arry << shots
+        shots = []
       end
     end
+    frame_arry
   end
 
-  def strike(frame_index)
-    point = @frames[frame_index].sum
-    next_index = frame_index + 1
-    special_point = if (@frames[next_index][0] == 10) && (frame_index < 8)
-                      @frames[next_index][0] + @frames[next_index + 1][0]
-                    else
-                      @frames[next_index][0] + @frames[next_index][1]
-                    end
-    point + special_point
-  end
-
-  def spare(frame_index)
-    next_index = frame_index + 1
-    point = @frames[frame_index].sum
-    special_point = @frames[next_index][0]
-    point + special_point
+  def strike?(score)
+    score == 10
   end
 end
