@@ -1,42 +1,32 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
+require './frame'
 
 class Score
-  def initialize(frame_arry)
-    @frame_arry = frame_arry
+  def initialize(frames)
+    @frames = frames
   end
 
   def score_calculate
-    @frame_arry.each.with_index.sum do |frame, i|
+    @frames.each.with_index.sum do |frame, i|
       if i == 9
-        frame.sum
-      elsif frame[0] == 10
-        frame_index = i
-        strike(frame_index)
-      elsif frame.sum == 10
+        frame.normal_score
+      elsif frame.strike?
+        next_frame = @frames[i + 1]
+        next_next_frame = @frames[i + 2]
+        frame.strike_score(next_frame, next_next_frame, i) + frame.normal_score
+      elsif frame.spare?
         frame_index = i
         spare(frame_index)
       else
-        frame.sum
+        frame.normal_score
       end
     end
   end
 
-  def strike(frame_index)
-    point = @frame_arry[frame_index].sum
-    next_index = frame_index + 1
-    special_point = if (@frame_arry[next_index][0] == 10) && (frame_index < 8)
-                      @frame_arry[next_index][0] + @frame_arry[next_index + 1][0]
-                    else
-                      @frame_arry[next_index][0] + @frame_arry[next_index][1]
-                    end
-    point + special_point
-  end
-
   def spare(frame_index)
     next_index = frame_index + 1
-    point = @frame_arry[frame_index].sum
-    special_point = @frame_arry[next_index][0]
+    point = @frames[frame_index].normal_score
+    special_point = @frames[next_index].shots[0]
     point + special_point
   end
 end

@@ -1,5 +1,5 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
+require './frame'
 
 class Game
   def initialize(score_numbers)
@@ -11,16 +11,18 @@ class Game
     frame_arry = []
     @score_numbers.each do |score|
       shots << score
-      if strike?(shots[0]) && (frame_arry.count < 9)
-        frame_arry << shots
+      if frame_arry.count >= 9
+        next
+      elsif strike?(shots[0]) && (frame_arry.count < 9)
+        frame_arry << Frame.new(shots)
         shots = []
-      elsif (frame_arry.count == 10) && !shots.empty?
-        frame_arry[9].concat shots
       elsif shots.count == 2
-        frame_arry << shots
+        frame_arry << Frame.new(shots)
         shots = []
       end
     end
+    frame_arry << Frame.new(shots)
+
     frame_arry
   end
 

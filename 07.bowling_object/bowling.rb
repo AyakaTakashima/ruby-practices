@@ -12,8 +12,8 @@ def calculate_score(pinfall_text)
   end
 
   game = Game.new(score_numbers)
-  frame_arry = game.build_frame
-  score = Score.new(frame_arry)
+  frames = game.build_frame
+  score = Score.new(frames)
   p score.score_calculate
 end
 
