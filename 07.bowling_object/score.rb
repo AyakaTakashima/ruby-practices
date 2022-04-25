@@ -6,27 +6,25 @@ class Score
     @frames = frames
   end
 
-  def score_calculate
-    @frames.each.with_index.sum do |frame, i|
-      if i == 9
-        frame.normal_score
-      elsif frame.strike?
-        next_frame = @frames[i + 1]
-        next_next_frame = @frames[i + 2]
-        frame.strike_score(next_frame, next_next_frame, i) + frame.normal_score
-      elsif frame.spare?
-        frame_index = i
-        spare(frame_index)
-      else
-        frame.normal_score
-      end
-    end
+  def frames
+    @frames
   end
 
-  def spare(frame_index)
-    next_index = frame_index + 1
-    point = @frames[frame_index].normal_score
-    special_point = @frames[next_index].shots[0]
-    point + special_point
+  def score_calculate
+    frames.each.with_index.sum do |frame, i|
+      bonus_points = if i == 9
+                       0
+                     elsif frame.strike?
+                       next_frame = frames[i + 1]
+                       next_next_frame = frames[i + 2]
+                       frame.strike_score(next_frame, next_next_frame, i)
+                     elsif frame.spare?
+                       next_frame = frames[i + 1]
+                       frame.spare_score(next_frame)
+                     else
+                        0
+                     end
+      bonus_points + frame.normal_score
+    end
   end
 end

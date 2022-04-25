@@ -6,10 +6,14 @@ class Game
     @score_numbers = score_numbers
   end
 
+  def score_numbers
+    @score_numbers
+  end
+
   def build_frame
     shots = []
     frame_arry = []
-    @score_numbers.each do |score|
+    score_numbers.each do |score|
       shots << score
       if frame_arry.count >= 9
         next
