@@ -5,9 +5,7 @@ class Frame
     @shots = shots
   end
 
-  def shots
-    @shots
-  end
+  attr_reader :shots
 
   def strike?
     shots[0] == 10

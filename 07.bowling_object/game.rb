@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require './frame'
 
 class Game
@@ -6,18 +7,16 @@ class Game
     @score_numbers = score_numbers
   end
 
-  def score_numbers
-    @score_numbers
-  end
+  attr_reader :score_numbers
 
   def build_frame
     shots = []
     frame_arry = []
     score_numbers.each do |score|
       shots << score
-      if frame_arry.count >= 9
-        next
-      elsif strike?(shots[0]) && (frame_arry.count < 9)
+      next if frame_arry.count >= 9
+
+      if strike?(shots[0]) && (frame_arry.count < 9)
         frame_arry << Frame.new(shots)
         shots = []
       elsif shots.count == 2
