@@ -7,12 +7,10 @@ class Game
     @score_numbers = score_numbers
   end
 
-  attr_reader :score_numbers
-
   def build_frame
     shots = []
     frame_arry = []
-    score_numbers.each do |score|
+    @score_numbers.each do |score|
       shots << score
       next if frame_arry.count >= 9
 
