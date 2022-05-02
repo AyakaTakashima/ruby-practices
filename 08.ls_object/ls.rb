@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require './list'
+require './08.ls_object/list'
 
 require 'optparse'
 

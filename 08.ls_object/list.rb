@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './file_info'
+require './08.ls_object/file_info'
 
 class List
   def initialize(files)
@@ -28,9 +28,15 @@ class List
     row_count = (@files.size.to_f / COLUMN_COUNT).ceil
 
     file_table = []
-    # transposeでエラーを起こさないよう、nilを入れるためにa, b, cへ一つずつ渡しています
-    padded_files.each_slice(row_count) do |a, b, c|
-      file_table << [a, b, c]
+    padded_files.each_slice(row_count) do |padded_file|
+      file_table << padded_file
+    end
+
+    if file_table[0].length > file_table.last.length
+      deference = file_table[0].length - file_table.last.length
+      deference.times {
+      file_table.last << nil
+      }
     end
 
     file_table.transpose.each do |row_files|

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './detail'
+require './08.ls_object/detail'
 
 require 'etc'
 
@@ -16,7 +16,7 @@ class FileInfo
       detail = Detail.new(file_detail)
       row_data = []
       row_data << detail.build_permission
-      row_data << file_detail[:nlink].to_s.rjust(2, ' ')
+      row_data << file_detail[:nlink].to_s.rjust(3, ' ')
       row_data << Etc.getpwuid(file_detail[:uid]).name.ljust(15, ' ')
       row_data << Etc.getgrgid(file_detail[:gid]).name
       row_data << file_detail[:size].to_s.rjust(5, ' ')
