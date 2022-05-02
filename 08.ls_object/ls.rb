@@ -17,11 +17,10 @@ def ls
 
   files.reverse! if params['r']
 
+  list = List.new(files)
   if params['l']
-    list = List.new(files)
     list.display_with_details
   else
-    list = List.new(files)
     list.display_files
   end
 end

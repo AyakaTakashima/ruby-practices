@@ -6,7 +6,7 @@ class Detail
   def initialize(file_detail)
     @file_detail = file_detail
   end
-  
+
   def build_permission
     permission_digit = @file_detail[:mode].to_s(8).rjust(6, '0')
     [
@@ -16,13 +16,13 @@ class Detail
       PERMISSION_TABLE[permission_digit[5]]
     ].join
   end
-  
+
   FILE_TYPE_TABLE = {
     '04' => 'd',
     '10' => '-',
     '12' => 'l'
   }.freeze
-  
+
   PERMISSION_TABLE = {
     '0' => '---',
     '1' => '--x',
@@ -33,11 +33,11 @@ class Detail
     '6' => 'rw-',
     '7' => 'rwx'
   }.freeze
-  
+
   def build_updated_at
     file_creation_date = @file_detail[:atime].to_date
     half_years_ago = Date.today.prev_month(6)
-  
+
     if file_creation_date <= half_years_ago
       @file_detail[:atime].strftime('%_m %_e  %Y')
     else

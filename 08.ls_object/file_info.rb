@@ -11,7 +11,7 @@ class FileInfo
 
   def build
     file_details = build_file_details
-  
+
     file_details.map do |file_detail|
       detail = Detail.new(file_detail)
       row_data = []
@@ -25,7 +25,7 @@ class FileInfo
       row_data
     end
   end
-  
+
   def build_file_details
     @files.map do |file|
       fs = File::Stat.new(file)
