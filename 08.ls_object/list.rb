@@ -34,9 +34,9 @@ class List
 
     if file_table[0].length > file_table.last.length
       deference = file_table[0].length - file_table.last.length
-      deference.times {
-      file_table.last << nil
-      }
+      deference.times do |_n|
+        file_table.last << nil
+      end
     end
 
     file_table.transpose.each do |row_files|
