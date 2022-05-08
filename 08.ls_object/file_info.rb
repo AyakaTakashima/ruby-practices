@@ -8,6 +8,14 @@ class FileInfo
     @files = files
   end
 
+  def each_block
+    file_blocks = []
+    @files.each do |file|
+      file_blocks << File::Stat.new(file).blocks
+    end
+    file_blocks
+  end
+
   def build
     file_details = build_file_details
 

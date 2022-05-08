@@ -3,17 +3,17 @@
 require_relative 'file_info'
 
 class List
+  COLUMN_COUNT = 3
+
   def initialize(files)
     @files = files
   end
 
   def display_with_details
-    block = @files.sum do |file|
-      File::Stat.new(file).blocks
-    end
-    puts "total #{block}"
-
     file_info = FileInfo.new(@files)
+    blocks = file_info.each_block
+    puts "total #{blocks.sum}"
+
     file_table = file_info.build
 
     file_table.each do |row|
@@ -21,7 +21,6 @@ class List
     end
   end
 
-  COLUMN_COUNT = 3
   def display_files
     padded_files = @files.map { |file| file.ljust(17) }
 
