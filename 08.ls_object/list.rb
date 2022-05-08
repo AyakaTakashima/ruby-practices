@@ -22,7 +22,9 @@ class List
   end
 
   def display_files
-    padded_files = @files.map { |file| file.ljust(17) }
+    file_info = FileInfo.new(@files)
+    padding_spaces = file_info.longest_name_length
+    padded_files = @files.map { |file| file.ljust(padding_spaces) }
 
     row_count = (@files.size.to_f / COLUMN_COUNT).ceil
 
