@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require './08.ls_object/detail'
-
+require_relative 'detail'
 require 'etc'
 
 class FileInfo

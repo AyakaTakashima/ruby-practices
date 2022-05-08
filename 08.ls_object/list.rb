@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './08.ls_object/file_info'
+require_relative 'file_info'
 
 class List
   def initialize(files)
