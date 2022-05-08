@@ -22,6 +22,24 @@ class FileInfo
 
   def build
     file_details = build_file_details
+    paddings = build_paddings
+
+    file_details.map do |file_detail|
+      detail = Detail.new(file_detail)
+      [
+        detail.build_permission,
+        file_detail[:nlink].to_s.rjust(paddings[0], ' '),
+        Etc.getpwuid(file_detail[:uid]).name.ljust(paddings[1], ' '),
+        Etc.getgrgid(file_detail[:gid]).name,
+        file_detail[:size].to_s.rjust(paddings[2], ' '),
+        detail.build_updated_at,
+        file_detail[:file_name]
+      ]
+    end
+  end
+
+  def build_paddings
+    file_details = build_file_details
 
     nlink_lengths = []
     uid_lengths = []
@@ -31,35 +49,24 @@ class FileInfo
       uid_lengths << Etc.getpwuid(file_detail[:uid]).name.length
       size_lengths << file_detail[:size].to_s.length
     end
-    nlink_padding = nlink_lengths.max + 1
-    uid_padding = uid_lengths.max + 1
-    size_padding = size_lengths.max + 1
-
-    file_details.map do |file_detail|
-      detail = Detail.new(file_detail)
-      [
-       detail.build_permission,
-       file_detail[:nlink].to_s.rjust(nlink_padding, ' '),
-       Etc.getpwuid(file_detail[:uid]).name.ljust(uid_padding, ' '),
-       Etc.getgrgid(file_detail[:gid]).name,
-       file_detail[:size].to_s.rjust(size_padding, ' '),
-       detail.build_updated_at,
-       file_detail[:file_name]
-      ]
-    end
+    [
+      nlink_lengths.max + 1,
+      uid_lengths.max + 1,
+      size_lengths.max + 1
+    ]
   end
 
   def build_file_details
     @files.map do |file|
       fs = File::Stat.new(file)
       {
-      mode: fs.mode,
-      nlink: fs.nlink,
-      uid: fs.uid,
-      gid: fs.gid,
-      size: fs.size,
-      atime: fs.atime,
-      file_name: file
+        mode: fs.mode,
+        nlink: fs.nlink,
+        uid: fs.uid,
+        gid: fs.gid,
+        size: fs.size,
+        atime: fs.atime,
+        file_name: file
       }
     end
   end
