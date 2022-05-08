@@ -37,30 +37,30 @@ class FileInfo
 
     file_details.map do |file_detail|
       detail = Detail.new(file_detail)
-      row_data = []
-      row_data << detail.build_permission
-      row_data << file_detail[:nlink].to_s.rjust(nlink_padding, ' ')
-      row_data << Etc.getpwuid(file_detail[:uid]).name.ljust(uid_padding, ' ')
-      row_data << Etc.getgrgid(file_detail[:gid]).name
-      row_data << file_detail[:size].to_s.rjust(size_padding, ' ')
-      row_data << detail.build_updated_at
-      row_data << file_detail[:file_name]
-      row_data
+      [
+       detail.build_permission,
+       file_detail[:nlink].to_s.rjust(nlink_padding, ' '),
+       Etc.getpwuid(file_detail[:uid]).name.ljust(uid_padding, ' '),
+       Etc.getgrgid(file_detail[:gid]).name,
+       file_detail[:size].to_s.rjust(size_padding, ' '),
+       detail.build_updated_at,
+       file_detail[:file_name]
+      ]
     end
   end
 
   def build_file_details
     @files.map do |file|
       fs = File::Stat.new(file)
-      file_detail = {}
-      file_detail[:mode] = fs.mode
-      file_detail[:nlink] = fs.nlink
-      file_detail[:uid] = fs.uid
-      file_detail[:gid] = fs.gid
-      file_detail[:size] = fs.size
-      file_detail[:atime] = fs.atime
-      file_detail[:file_name] = file
-      file_detail
+      {
+      mode: fs.mode,
+      nlink: fs.nlink,
+      uid: fs.uid,
+      gid: fs.gid,
+      size: fs.size,
+      atime: fs.atime,
+      file_name: file
+      }
     end
   end
 end
