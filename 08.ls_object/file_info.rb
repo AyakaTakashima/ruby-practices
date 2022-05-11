@@ -22,7 +22,7 @@ class FileInfo
 
   def build
     file_details = build_file_details
-    paddings = build_paddings
+    paddings = build_paddings(file_details)
 
     file_details.map do |file_detail|
       detail = Detail.new(file_detail)
@@ -38,9 +38,8 @@ class FileInfo
     end
   end
 
-  def build_paddings
-    file_details = build_file_details
-
+  private
+  def build_paddings(file_details)
     nlink_lengths = []
     uid_lengths = []
     size_lengths = []
