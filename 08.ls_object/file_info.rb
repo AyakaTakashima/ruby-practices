@@ -39,6 +39,7 @@ class FileInfo
   end
 
   private
+
   def build_paddings(file_details)
     nlink_lengths = []
     uid_lengths = []
